@@ -36,6 +36,24 @@ const createWorkout = async (req, res) => {
     // deconstruct request and get 'title', 'load', and 'reps'
     const { title, load, reps } = req.body;
 
+    // Create array for fields that are empty when user tries to submit a form
+    let emptyFields = [];
+
+    // Check if fields have a value, if not then add those fields to array
+    if (!title) {
+        emptyFields.push('title');
+    }
+    if (!load) {
+        emptyFields.push('load');
+    }
+    if (!reps) {
+        emptyFields.push('reps');
+    }
+    // If 'emptyFields' has a length greater than zero, send an error back to client
+    if (emptyFields.length > 0) {
+        return res.status(400).json({ error: 'Please fill in all the fields', emptyFields});
+    }
+
     // add doc to db
     try {
         const workout = await Workout.create({ title, load, reps }); // attempt to create a Workout in DB
