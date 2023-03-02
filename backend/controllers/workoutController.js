@@ -4,8 +4,9 @@ const mongoose = require('mongoose'); // get mongoose from node_modules
 const errorMssg = { error: 'No such workout' }; // standard error to use when there is an invalid ID requested
 // get all workouts
 const getWorkouts = async (req, res) => {
+    const user_id = req.user._id;
     // get all workouts and sort in descending order
-    const workouts = await Workout.find({}).sort({ createdAt: -1 });
+    const workouts = await Workout.find({ user_id }).sort({ createdAt: -1 });
 
     // send all workouts with an 'OK' status
     res.status(200).json(workouts)
@@ -56,7 +57,8 @@ const createWorkout = async (req, res) => {
 
     // add doc to db
     try {
-        const workout = await Workout.create({ title, load, reps }); // attempt to create a Workout in DB
+        const user_id = req.user._id; // get the user ID from the request object
+        const workout = await Workout.create({ title, load, reps, user_id }); // attempt to create a Workout in DB
         res.status(200).json(workout); // send back doc and status if workout is successfully created
     } catch (error) {
         res.status(400).json({ error: error.message }); // catch error and send back to user
